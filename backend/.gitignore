@@ -44,9 +44,6 @@ tmp/
 temp/
 *.tmp
 
-# Uploads (if storing locally)
-uploads/
-public/uploads/
 
 # Database
 *.sqlite
