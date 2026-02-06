@@ -1,7 +1,7 @@
 import { Package, Eye, EyeOff, Star } from 'lucide-react';
 
 const CollectionCard = ({ collection, onViewProducts, onToggleFeatured, onToggleActive, onEdit, onDelete }) => {
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_URL = import.meta.env.VITE_API_URL || 'https://pavon-website.onrender.com/api';
   const imageUrl = collection.image?.startsWith('http') 
     ? collection.image 
     : `${API_URL}${collection.image}`;
