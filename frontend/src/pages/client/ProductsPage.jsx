@@ -1,5 +1,5 @@
 // frontend/src/pages/client/ProductsPage.jsx
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, X, SlidersHorizontal, Sparkles, Search } from 'lucide-react';
@@ -28,52 +28,89 @@ const ProductsPage = () => {
     colors: [],
   });
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest');
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
+
   const debounceTimeoutRef = useRef(null);
+  const isInitialLoadRef = useRef(true);
+  const fetchIdRef = useRef(0);
+
+  // Refs to hold latest state values for the fetch function (avoids stale closures)
+  const filtersRef = useRef(filters);
+  const searchQueryRef = useRef(searchQuery);
+  const sortByRef = useRef(sortBy);
+  const paginationRef = useRef(pagination);
+  filtersRef.current = filters;
+  searchQueryRef.current = searchQuery;
+  sortByRef.current = sortBy;
+  paginationRef.current = pagination;
+
+  // Stable serialized key — avoids re-triggering effect when object reference changes but values are identical
+  const filtersKey = useMemo(() => JSON.stringify(filters), [filters]);
 
   useEffect(() => {
     document.title = 'Nos Produits - Élégance';
   }, []);
 
-  // Auto-search with debounce
+  // Debounced fetch — uses filtersKey (string) instead of filters (object)
+  // so it only re-triggers when filter values actually change, not on every new object ref
   useEffect(() => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
 
+    const delay = isInitialLoadRef.current ? 0 : 350;
     debounceTimeoutRef.current = setTimeout(() => {
       fetchProducts();
-    }, 500); // 500ms debounce
+    }, delay);
 
     return () => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  }, [searchQuery, filters, sortBy, searchParams, pagination.page]);
+  }, [searchQuery, filtersKey, sortBy, pagination.page]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
+    // Read latest values from refs (avoids stale closures & extra dependencies)
+    const currentFilters = filtersRef.current;
+    const currentSearch = searchQueryRef.current;
+    const currentSort = sortByRef.current;
+    const currentPagination = paginationRef.current;
+
+    // Track request ID to ignore stale responses when a newer request is in-flight
+    const requestId = ++fetchIdRef.current;
+    const isInitial = isInitialLoadRef.current;
+
     try {
-      setLoading(true);
+      if (isInitial) {
+        setLoading(true);
+      } else {
+        setIsFilterLoading(true);
+      }
+
       const params = {
-        sort: sortBy,
-        minPrice: filters.priceRange.min,
-        maxPrice: filters.priceRange.max,
-        page: pagination.page,
-        limit: pagination.limit,
+        sort: currentSort,
+        minPrice: currentFilters.priceRange.min,
+        maxPrice: currentFilters.priceRange.max,
+        page: currentPagination.page,
+        limit: currentPagination.limit,
       };
 
-      if (searchQuery) params.search = searchQuery;
-      if (filters.categories.length > 0) params.category = filters.categories.join(',');
-      if (filters.collections.length > 0) params.collection = filters.collections.join(',');
-      if (filters.sizes.length > 0) params.sizes = filters.sizes.join(',');
-      if (filters.numericSizes.length > 0) params.numericSizes = filters.numericSizes.join(',');
-      if (filters.colors.length > 0) params.colors = filters.colors.join(',');
+      if (currentSearch) params.search = currentSearch;
+      if (currentFilters.categories.length > 0) params.category = currentFilters.categories.join(',');
+      if (currentFilters.collections.length > 0) params.collection = currentFilters.collections.join(',');
+      if (currentFilters.sizes.length > 0) params.sizes = currentFilters.sizes.join(',');
+      if (currentFilters.numericSizes.length > 0) params.numericSizes = currentFilters.numericSizes.join(',');
+      if (currentFilters.colors.length > 0) params.colors = currentFilters.colors.join(',');
 
       const response = await productService.getAll(params);
+
+      // Ignore stale response if a newer request was fired
+      if (requestId !== fetchIdRef.current) return;
+
       const productsData = response?.data || response || [];
       setProducts(Array.isArray(productsData) ? productsData : []);
-      
-      // Update pagination info
+
       if (response.total !== undefined) {
         setPagination(prev => ({
           ...prev,
@@ -81,28 +118,34 @@ const ProductsPage = () => {
           pages: response.pages || Math.ceil(response.total / prev.limit),
         }));
       }
+
+      isInitialLoadRef.current = false;
     } catch (error) {
+      if (requestId !== fetchIdRef.current) return;
       console.error('Error fetching products:', error);
       setProducts([]);
     } finally {
-      setLoading(false);
+      if (requestId === fetchIdRef.current) {
+        setLoading(false);
+        setIsFilterLoading(false);
+      }
     }
-  };
+  }, []);
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
-    setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1 on filter change
-  };
-  
-  const handlePageChange = (newPage) => {
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, []);
+
+  const handlePageChange = useCallback((newPage) => {
     setPagination(prev => ({ ...prev, page: newPage }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-  
-  const handleSortChange = (e) => {
+  }, []);
+
+  const handleSortChange = useCallback((e) => {
     setSortBy(e.target.value);
-    setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1 on sort change
-  };
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#fdf9ee]">
@@ -261,7 +304,7 @@ const ProductsPage = () => {
             transition={{ delay: 0.5 }}
             className="flex-1"
           >
-            {loading ? (
+            {(loading || isFilterLoading) && products.length === 0 ? (
               <div className="flex items-center justify-center py-20">
                 <motion.div
                   animate={{ rotate: 360 }}
@@ -271,8 +314,33 @@ const ProductsPage = () => {
               </div>
             ) : products.length > 0 ? (
               <>
-                <ProductGrid products={products} />
-                
+                <div className="relative">
+                  {/* Smooth loading overlay for filter/sort changes */}
+                  <AnimatePresence>
+                    {isFilterLoading && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-2xl pointer-events-none"
+                      >
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                          className="w-10 h-10 border-[3px] border-[#5d1115] border-t-transparent rounded-full"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <div
+                    className="transition-opacity duration-300 ease-in-out"
+                    style={{ opacity: isFilterLoading ? 0.6 : 1 }}
+                  >
+                    <ProductGrid products={products} />
+                  </div>
+                </div>
+
                 {/* Pagination */}
                 {pagination.pages > 1 && (
                   <motion.div
@@ -373,7 +441,7 @@ const ProductsPage = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setFilters({
+                    onClick={() => handleFilterChange({
                       categories: [],
                       collections: [],
                       priceRange: { min: 0, max: 10000 },

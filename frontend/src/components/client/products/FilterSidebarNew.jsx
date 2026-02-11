@@ -1,10 +1,47 @@
 // frontend/src/components/client/products/FilterSidebarNew.jsx
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronDown, ChevronUp, Tag, Grid, Palette, Ruler, Package } from 'lucide-react';
 import categoryService from '../../../services/categoryService';
 import { collectionService } from '../../../services/collectionService';
+
+// Extracted outside the component to maintain a stable component identity across renders.
+// This prevents React from unmounting/remounting filter sections when the parent re-renders.
+const FilterSection = ({ title, icon: Icon, section, children, expandedSections, onToggle }) => (
+    <div className="border-b border-gray-200 last:border-0">
+        <button
+            onClick={() => onToggle(section)}
+            className="w-full flex items-center justify-between py-4 hover:text-[#5d1115] transition-colors"
+        >
+            <div className="flex items-center space-x-2">
+                <Icon className="w-5 h-5 text-[#5d1115]" />
+                <span className="font-semibold text-gray-900">{title}</span>
+            </div>
+            {expandedSections[section] ? (
+                <ChevronUp className="w-5 h-5 text-gray-400" />
+            ) : (
+                <ChevronDown className="w-5 h-5 text-gray-400" />
+            )}
+        </button>
+
+        <AnimatePresence>
+            {expandedSections[section] && (
+                <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                >
+                    <div className="pb-4 space-y-3">
+                        {children}
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    </div>
+);
 
 const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = false }) => {
     const [categories, setCategories] = useState([]);
@@ -47,12 +84,12 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
         }
     };
 
-    const toggleSection = (section) => {
+    const toggleSection = useCallback((section) => {
         setExpandedSections(prev => ({
             ...prev,
             [section]: !prev[section]
         }));
-    };
+    }, []);
 
     const handleCategoryChange = (categoryId) => {
         const currentCategories = filters.categories || [];
@@ -140,41 +177,6 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
         { name: 'Gris', hex: '#6B7280' },
     ];
 
-    const FilterSection = ({ title, icon: Icon, section, children }) => (
-        <div className="border-b border-gray-200 last:border-0">
-            <button
-                onClick={() => toggleSection(section)}
-                className="w-full flex items-center justify-between py-4 hover:text-[#5d1115] transition-colors"
-            >
-                <div className="flex items-center space-x-2">
-                    <Icon className="w-5 h-5 text-[#5d1115]" />
-                    <span className="font-semibold text-gray-900">{title}</span>
-                </div>
-                {expandedSections[section] ? (
-                    <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-            </button>
-
-            <AnimatePresence>
-                {expandedSections[section] && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                    >
-                        <div className="pb-4 space-y-3">
-                            {children}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-
     const activeFiltersCount =
         (filters.categories?.length || 0) +
         (filters.collections?.length || 0) +
@@ -206,7 +208,7 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
             </div>
 
             {/* Collections Filter */}
-            <FilterSection title="Collections" icon={Grid} section="collections">
+            <FilterSection title="Collections" icon={Grid} section="collections" expandedSections={expandedSections} onToggle={toggleSection}>
                 {loading ? (
                     <div className="space-y-2">
                         {[...Array(3)].map((_, i) => (
@@ -236,7 +238,7 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
             </FilterSection>
 
             {/* Categories Filter */}
-            <FilterSection title="Catégories" icon={Tag} section="categories">
+            <FilterSection title="Catégories" icon={Tag} section="categories" expandedSections={expandedSections} onToggle={toggleSection}>
                 {loading ? (
                     <div className="space-y-2">
                         {[...Array(4)].map((_, i) => (
@@ -266,7 +268,7 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
             </FilterSection>
 
             {/* Price Range */}
-            <FilterSection title="Prix" icon={Tag} section="price">
+            <FilterSection title="Prix" icon={Tag} section="price" expandedSections={expandedSections} onToggle={toggleSection}>
                 <div className="space-y-2">
                     {priceRanges.map((range, index) => {
                         const isSelected = filters.priceRange?.min === range.min && 
@@ -292,7 +294,7 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
             </FilterSection>
 
             {/* Sizes */}
-            <FilterSection title="Tailles" icon={Ruler} section="sizes">
+            <FilterSection title="Tailles" icon={Ruler} section="sizes" expandedSections={expandedSections} onToggle={toggleSection}>
                 <div className="grid grid-cols-3 gap-2">
                     {sizes.map((size) => (
                         <motion.button
@@ -312,7 +314,7 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
             </FilterSection>
 
             {/* Colors */}
-            <FilterSection title="Couleurs" icon={Palette} section="colors">
+            <FilterSection title="Couleurs" icon={Palette} section="colors" expandedSections={expandedSections} onToggle={toggleSection}>
                 <div className="grid grid-cols-4 gap-3">
                     {colorOptions.map((color) => (
                         <motion.button
@@ -340,7 +342,7 @@ const FilterSidebarNew = memo(({ filters, onFilterChange, onClose, isMobile = fa
             </FilterSection>
 
             {/* Numeric Sizes */}
-            <FilterSection title="Tailles numériques" icon={Ruler} section="numericSizes">
+            <FilterSection title="Tailles numériques" icon={Ruler} section="numericSizes" expandedSections={expandedSections} onToggle={toggleSection}>
                 <div className="grid grid-cols-4 gap-2">
                     {numericSizes.map((size) => (
                         <motion.button

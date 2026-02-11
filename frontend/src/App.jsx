@@ -29,6 +29,8 @@ import DashboardCategories from './pages/dashboard/DashboardCategories';
 import DashboardContacts from './pages/dashboard/DashboardContacts';
 import DashboardTestimonials from './pages/dashboard/DashboardTestimonials';
 import DashboardTopBanner from './pages/dashboard/DashboardTopBanner';
+import DashboardExternalOrders from './pages/dashboard/DashboardExternalOrders';
+import DashboardFinancials from './pages/dashboard/DashboardFinancials';
 import DashboardLogin from './pages/dashboard/DashboardLogin';
 
 // Protected Route Component
@@ -79,6 +81,8 @@ function App() {
                   <Route path="categories" element={<DashboardCategories />} />
                   <Route path="contacts" element={<DashboardContacts />} />
                   <Route path="testimonials" element={<DashboardTestimonials />} />
+                  <Route path="external-orders" element={<DashboardExternalOrders />} />
+                  <Route path="financials" element={<DashboardFinancials />} />
                 </Route>
 
                 {/* 404 Redirect */}

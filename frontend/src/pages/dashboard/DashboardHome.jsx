@@ -1,11 +1,18 @@
 // frontend/src/pages/dashboard/DashboardHome.jsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import orderService from '../../services/orderService';
 import productService from '../../services/productService';
 import categoryService from '../../services/categoryService';
 import { collectionService } from '../../services/collectionService';
+import externalOrderService from '../../services/externalOrderService';
+import ExternalOrderForm from '../../components/dashboard/externalOrders/ExternalOrderForm';
+import ExpenseForm from '../../components/dashboard/externalOrders/ExpenseForm';
+import OrdersTable from '../../components/dashboard/externalOrders/OrdersTable';
+import ExpensesList from '../../components/dashboard/externalOrders/ExpensesList';
+import RecurringClients from '../../components/dashboard/externalOrders/RecurringClients';
+import FinancialMetrics from '../../components/dashboard/externalOrders/FinancialMetrics';
 import {
   ShoppingBagIcon,
   CurrencyDollarIcon,
@@ -15,6 +22,10 @@ import {
   TagIcon,
   SparklesIcon,
   ChartBarIcon,
+  PlusIcon,
+  ArrowPathIcon,
+  FunnelIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 
 const DashboardHome = () => {
@@ -35,6 +46,30 @@ const DashboardHome = () => {
   const [revenueData, setRevenueData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chartPeriod, setChartPeriod] = useState(7); // 7, 30, 90, 365 days
+  
+  // External orders state
+  const [externalOrderMetrics, setExternalOrderMetrics] = useState(null);
+  const [loadingExternal, setLoadingExternal] = useState(false);
+
+  // ── External Orders Management Section State ──
+  const [extOrders, setExtOrders] = useState([]);
+  const [extPagination, setExtPagination] = useState(null);
+  const [extExpenses, setExtExpenses] = useState([]);
+  const [extClients, setExtClients] = useState([]);
+  const [extClientOrders, setExtClientOrders] = useState([]);
+  const [loadingExtOrders, setLoadingExtOrders] = useState(true);
+  const [loadingExtExpenses, setLoadingExtExpenses] = useState(true);
+  const [loadingExtClients, setLoadingExtClients] = useState(true);
+  const [loadingExtHistory, setLoadingExtHistory] = useState(false);
+  const [extFilters, setExtFilters] = useState({});
+  const [extSortBy, setExtSortBy] = useState('date');
+  const [extSortOrder, setExtSortOrder] = useState('desc');
+  const [extCurrentPage, setExtCurrentPage] = useState(1);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [extNotification, setExtNotification] = useState(null);
 
   useEffect(() => {
     document.title = 'Tableau de bord - Pavon Admin';
@@ -185,6 +220,203 @@ const DashboardHome = () => {
       console.error('Error updating chart:', error);
     }
   };
+
+  // Fetch external orders metrics
+  const fetchExternalOrderMetrics = async () => {
+    try {
+      setLoadingExternal(true);
+      const response = await externalOrderService.getFinancialMetrics();
+      if (response.success) {
+        setExternalOrderMetrics(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching external order metrics:', error);
+    } finally {
+      setLoadingExternal(false);
+    }
+  };
+
+  // ── External orders management fetch functions ──
+  const showExtNotification = (message, type = 'success') => {
+    setExtNotification({ message, type });
+    setTimeout(() => setExtNotification(null), 3500);
+  };
+
+  const fetchExtOrders = useCallback(async () => {
+    try {
+      setLoadingExtOrders(true);
+      const response = await externalOrderService.getAllOrders({
+        page: extCurrentPage,
+        limit: 10,
+        sortBy: extSortBy,
+        sortOrder: extSortOrder,
+        ...extFilters,
+      });
+      if (response.success) {
+        setExtOrders(response.data);
+        setExtPagination(response.pagination);
+      }
+    } catch (error) {
+      console.error('Error fetching ext orders:', error);
+    } finally {
+      setLoadingExtOrders(false);
+    }
+  }, [extCurrentPage, extSortBy, extSortOrder, extFilters]);
+
+  const fetchExtExpenses = useCallback(async () => {
+    try {
+      setLoadingExtExpenses(true);
+      const response = await externalOrderService.getAllExpenses();
+      if (response.success) {
+        setExtExpenses(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching ext expenses:', error);
+    } finally {
+      setLoadingExtExpenses(false);
+    }
+  }, []);
+
+  const fetchExtClients = useCallback(async () => {
+    try {
+      setLoadingExtClients(true);
+      const response = await externalOrderService.getRecurringClients();
+      if (response.success) {
+        setExtClients(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching ext clients:', error);
+    } finally {
+      setLoadingExtClients(false);
+    }
+  }, []);
+
+  const fetchExtClientHistory = async (name) => {
+    try {
+      setLoadingExtHistory(true);
+      const response = await externalOrderService.getClientOrders(name);
+      if (response.success) {
+        setExtClientOrders(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching client history:', error);
+    } finally {
+      setLoadingExtHistory(false);
+    }
+  };
+
+  const refreshExtSection = () => {
+    fetchExtOrders();
+    fetchExtExpenses();
+    fetchExtClients();
+    fetchExternalOrderMetrics();
+  };
+
+  // Order CRUD handlers
+  const handleCreateOrder = async (data) => {
+    try {
+      const response = await externalOrderService.createOrder(data);
+      if (response.success) {
+        showExtNotification('Commande créée avec succès');
+        setShowOrderForm(false);
+        refreshExtSection();
+      }
+    } catch (error) {
+      showExtNotification(error.response?.data?.message || 'Erreur lors de la création', 'error');
+    }
+  };
+
+  const handleUpdateOrder = async (data) => {
+    try {
+      const response = await externalOrderService.updateOrder(editingOrder._id, data);
+      if (response.success) {
+        showExtNotification('Commande mise à jour');
+        setEditingOrder(null);
+        refreshExtSection();
+      }
+    } catch (error) {
+      showExtNotification(error.response?.data?.message || 'Erreur lors de la mise à jour', 'error');
+    }
+  };
+
+  const handleDeleteOrder = async (id) => {
+    if (!window.confirm('Supprimer cette commande ?')) return;
+    try {
+      const response = await externalOrderService.deleteOrder(id);
+      if (response.success) {
+        showExtNotification('Commande supprimée');
+        refreshExtSection();
+      }
+    } catch (error) {
+      showExtNotification('Erreur lors de la suppression', 'error');
+    }
+  };
+
+  // Expense CRUD handlers
+  const handleCreateExpense = async (data) => {
+    try {
+      const response = await externalOrderService.createExpense(data);
+      if (response.success) {
+        showExtNotification('Charge créée avec succès');
+        setShowExpenseForm(false);
+        refreshExtSection();
+      }
+    } catch (error) {
+      showExtNotification(error.response?.data?.message || 'Erreur lors de la création', 'error');
+    }
+  };
+
+  const handleUpdateExpense = async (data) => {
+    try {
+      const response = await externalOrderService.updateExpense(editingExpense._id, data);
+      if (response.success) {
+        showExtNotification('Charge mise à jour');
+        setEditingExpense(null);
+        refreshExtSection();
+      }
+    } catch (error) {
+      showExtNotification(error.response?.data?.message || 'Erreur lors de la mise à jour', 'error');
+    }
+  };
+
+  const handleDeleteExpense = async (id) => {
+    if (!window.confirm('Supprimer cette charge ?')) return;
+    try {
+      const response = await externalOrderService.deleteExpense(id);
+      if (response.success) {
+        showExtNotification('Charge supprimée');
+        refreshExtSection();
+      }
+    } catch (error) {
+      showExtNotification('Erreur lors de la suppression', 'error');
+    }
+  };
+
+  const handleExtFilterChange = (newFilters) => {
+    setExtFilters(newFilters);
+    setExtCurrentPage(1);
+  };
+
+  const handleExtSort = (field, order) => {
+    setExtSortBy(field);
+    setExtSortOrder(order);
+    setExtCurrentPage(1);
+  };
+
+  // Fetch external metrics on component mount
+  useEffect(() => {
+    fetchExternalOrderMetrics();
+  }, []);
+
+  // Fetch external section data
+  useEffect(() => {
+    fetchExtOrders();
+  }, [fetchExtOrders]);
+
+  useEffect(() => {
+    fetchExtExpenses();
+    fetchExtClients();
+  }, [fetchExtExpenses, fetchExtClients]);
 
   const getStatusColor = (status) => {
     const colors = {
@@ -661,6 +893,188 @@ const DashboardHome = () => {
           )}
         </div>
       </div>
+
+      {/* External Orders Summary Section */}
+      {externalOrderMetrics && (
+        <div className="mt-8 bg-gradient-to-br from-green-50 to-white p-8 rounded-xl shadow-lg border-2 border-green-200">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <CurrencyDollarIcon className="w-7 h-7 text-green-600" />
+              <h2 className="text-2xl font-bold text-[#111f35]">Commandes Externes</h2>
+            </div>
+            <Link
+              to="/dashboard/financials"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+            >
+              Voir détails
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg p-6 shadow border-2 border-green-200">
+              <p className="text-gray-600 text-sm font-medium mb-1">Chiffre d'affaires</p>
+              <p className="text-3xl font-bold text-green-600">
+                {new Intl.NumberFormat('fr-TN', {
+                  style: 'currency',
+                  currency: 'TND',
+                  minimumFractionDigits: 3,
+                }).format(externalOrderMetrics.totalRevenue || 0)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">{externalOrderMetrics.orderCount || 0} commandes</p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow border-2 border-red-200">
+              <p className="text-gray-600 text-sm font-medium mb-1">Charges</p>
+              <p className="text-3xl font-bold text-red-600">
+                {new Intl.NumberFormat('fr-TN', {
+                  style: 'currency',
+                  currency: 'TND',
+                  minimumFractionDigits: 3,
+                }).format(externalOrderMetrics.totalExpenses || 0)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Période actuelle</p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow border-2 border-blue-200">
+              <p className="text-gray-600 text-sm font-medium mb-1">Montant net</p>
+              <p className={`text-3xl font-bold ${(externalOrderMetrics.netProfit || 0) >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                {new Intl.NumberFormat('fr-TN', {
+                  style: 'currency',
+                  currency: 'TND',
+                  minimumFractionDigits: 3,
+                }).format(externalOrderMetrics.netProfit || 0)}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {(externalOrderMetrics.netProfit || 0) >= 0 ? 'Bénéfice' : 'Perte'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════
+          EXTERNAL ORDERS & EXPENSES MANAGEMENT SECTION
+          ═══════════════════════════════════════════════════ */}
+      <div className="relative">
+        {/* Notification toast */}
+        {extNotification && (
+          <div
+            className={`fixed top-6 right-6 z-[100] px-6 py-3 rounded-xl shadow-2xl text-white font-medium transition-all duration-300 ${
+              extNotification.type === 'error' ? 'bg-red-600' : 'bg-green-600'
+            }`}
+          >
+            {extNotification.message}
+          </div>
+        )}
+
+        {/* Section Header */}
+        <div className="bg-gradient-to-r from-[#111f35] to-[#1a2d4a] rounded-2xl p-8 text-white">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 className="text-3xl font-bold">Gestion des commandes externes & charges</h2>
+              <p className="mt-2 text-[#e8ddca] opacity-90">
+                Ajoutez des commandes, gérez vos dépenses et suivez vos profits
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={refreshExtSection}
+                className="p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
+                title="Actualiser"
+              >
+                <ArrowPathIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setShowExpenseForm(true)}
+                className="flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors font-semibold text-sm"
+              >
+                <PlusIcon className="w-5 h-5" />
+                Nouvelle charge
+              </button>
+              <button
+                onClick={() => setShowOrderForm(true)}
+                className="flex items-center gap-2 px-5 py-3 bg-white text-[#111f35] rounded-xl hover:bg-[#fdf9ee] transition-colors font-semibold text-sm"
+              >
+                <PlusIcon className="w-5 h-5" />
+                Nouvelle commande
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Financial Summary */}
+        <div className="mt-6">
+          <FinancialMetrics metrics={externalOrderMetrics} loading={loadingExternal} />
+        </div>
+
+        {/* Orders Table */}
+        <div className="mt-6">
+          <OrdersTable
+            orders={extOrders}
+            pagination={extPagination}
+            filters={extFilters}
+            onFilterChange={handleExtFilterChange}
+            onSort={handleExtSort}
+            sortBy={extSortBy}
+            sortOrder={extSortOrder}
+            onEdit={(order) => setEditingOrder(order)}
+            onDelete={handleDeleteOrder}
+            onPageChange={(page) => setExtCurrentPage(page)}
+            loading={loadingExtOrders}
+          />
+        </div>
+
+        {/* Expenses List */}
+        <div className="mt-6">
+          <ExpensesList
+            expenses={extExpenses}
+            onEdit={(expense) => setEditingExpense(expense)}
+            onDelete={handleDeleteExpense}
+            loading={loadingExtExpenses}
+          />
+        </div>
+
+        {/* Recurring Clients */}
+        <div className="mt-6">
+          <RecurringClients
+            clients={extClients}
+            onViewHistory={fetchExtClientHistory}
+            clientOrders={extClientOrders}
+            loadingHistory={loadingExtHistory}
+            loading={loadingExtClients}
+          />
+        </div>
+      </div>
+
+      {/* ── Modals ──────────────────────────────── */}
+      {showOrderForm && (
+        <ExternalOrderForm
+          order={null}
+          onSubmit={handleCreateOrder}
+          onClose={() => setShowOrderForm(false)}
+        />
+      )}
+      {editingOrder && (
+        <ExternalOrderForm
+          order={editingOrder}
+          onSubmit={handleUpdateOrder}
+          onClose={() => setEditingOrder(null)}
+        />
+      )}
+      {showExpenseForm && (
+        <ExpenseForm
+          expense={null}
+          onSubmit={handleCreateExpense}
+          onClose={() => setShowExpenseForm(false)}
+        />
+      )}
+      {editingExpense && (
+        <ExpenseForm
+          expense={editingExpense}
+          onSubmit={handleUpdateExpense}
+          onClose={() => setEditingExpense(null)}
+        />
+      )}
     </div>
   );
 };

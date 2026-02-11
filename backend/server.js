@@ -65,6 +65,9 @@ app.use('/api/orders', require('./router/orders')); // ✅ Your orders.js
 app.use('/api/cart', require('./router/cart')); // ✅ Your cart.js
 app.use('/api/contact', require('./router/contact')); // ✅ Your contact.js
 app.use('/api/dashboard', require('./router/dashboard')); // ✅ Your dashboard.js
+app.use('/api/external-orders', require('./router/externalOrders')); // ✅ External orders & expenses
+
+
 
 // ====== STATIC FILES (uploads) ======
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -15,6 +15,7 @@ const testimonialRoutes = require('./testimonials');
 const authRoutes = require('./auth');
 const dashboardRoutes = require('./dashboard');
 const topBannerRoutes = require('./topBanner');
+const externalOrderRoutes = require('./externalOrders');
 
 // Mount routes
 router.use('/products', productRoutes);
@@ -28,6 +29,7 @@ router.use('/testimonials', testimonialRoutes);
 router.use('/auth', authRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/top-banner', topBannerRoutes);
+router.use('/external-orders', externalOrderRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -55,6 +57,7 @@ router.get('/', (req, res) => {
       testimonials: '/api/testimonials',
       auth: '/api/auth',
       dashboard: '/api/dashboard',
+      externalOrders: '/api/external-orders',
     },
   });
 });

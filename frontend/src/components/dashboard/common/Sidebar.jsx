@@ -12,7 +12,9 @@ import {
   StarIcon,
   ChartBarIcon,
   XMarkIcon,
-  MegaphoneIcon
+  MegaphoneIcon,
+  CurrencyDollarIcon,
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -22,13 +24,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     { name: 'Dashboard', path: '/dashboard', icon: HomeIcon },
     { name: 'Products', path: '/dashboard/products', icon: ShoppingBagIcon },
     { name: 'Orders', path: '/dashboard/orders', icon: TruckIcon },
+    { name: 'External Orders', path: '/dashboard/external-orders', icon: GlobeAltIcon },
+    { name: 'Stats & Expenses', path: '/dashboard/financials', icon: CurrencyDollarIcon },
     { name: 'Banners', path: '/dashboard/banners', icon: PhotoIcon },
     { name: 'Top Banner', path: '/dashboard/top-banner', icon: MegaphoneIcon },
     { name: 'Collections', path: '/dashboard/collections', icon: FolderIcon },
     { name: 'Categories', path: '/dashboard/categories', icon: TagIcon },
     { name: 'Contacts', path: '/dashboard/contacts', icon: EnvelopeIcon },
     { name: 'Testimonials', path: '/dashboard/testimonials', icon: StarIcon },
-
   ];
 
   const isActive = (path) => location.pathname === path;
