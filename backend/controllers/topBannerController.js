@@ -6,9 +6,9 @@ const TopBanner = require('../models/TopBanner');
 // @access  Public
 exports.getActiveBanner = async (req, res) => {
   try {
-    const banner = await TopBanner.findOne({ isActive: true });
+    const banners = await TopBanner.find({ isActive: true }).sort({ createdAt: -1 });
     
-    if (!banner) {
+    if (!banners || banners.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Aucune bannière active trouvée',
@@ -17,13 +17,13 @@ exports.getActiveBanner = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      ...banner.toObject(),
+      data: banners,
     });
   } catch (error) {
-    console.error('Error fetching active top banner:', error);
+    console.error('Error fetching active top banners:', error);
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la récupération de la bannière',
+      message: 'Erreur lors de la récupération des bannières',
       error: error.message,
     });
   }

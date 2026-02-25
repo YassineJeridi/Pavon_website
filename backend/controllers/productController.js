@@ -108,12 +108,17 @@ exports.getAllProducts = async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     // ✅ FIXED: Execute query with correct field names
-    const products = await Product.find(filter)
+    let query = Product.find(filter)
       .populate('categories', 'name slug')
       .populate('productCollection', 'name slug')  // ✅ Changed
-      .sort(sort)
-      .skip(skip)
-      .limit(limitNum);
+      .sort(sort);
+
+    // Skip pagination when all=true (e.g. dashboard stock overview)
+    if (req.query.all !== 'true') {
+      query = query.skip(skip).limit(limitNum);
+    }
+
+    const products = await query;
 
     // Get total count
     const total = await Product.countDocuments(filter);

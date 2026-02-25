@@ -225,6 +225,20 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
+    const previousStatus = order.status;
+
+    // Restore stock if order is cancelled
+    if (status === 'cancelled' && previousStatus !== 'cancelled') {
+      for (const item of order.items) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          product.stock += item.quantity;
+          product.soldCount = Math.max(0, product.soldCount - item.quantity);
+          await product.save();
+        }
+      }
+    }
+
     order.status = status;
 
     if (trackingNumber) {
