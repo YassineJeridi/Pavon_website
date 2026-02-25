@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 import { useNotification } from '../../hooks/useNotification';
 import { tunisiaStates } from '../../utils/tunisiaStates';
+import { getDelegationsByGovernorate } from '../../utils/tunisiaDelegations';
 import orderService from '../../services/orderService';
 import {
     ShoppingBagIcon,
@@ -15,6 +16,8 @@ import {
     UserIcon,
     HomeIcon,
     BuildingOfficeIcon,
+    CalendarIcon,
+    CreditCardIcon,
 } from '@heroicons/react/24/outline';
 
 const DELIVERY_COST = 7; // 7 TND
@@ -31,8 +34,13 @@ const CheckoutPage = () => {
         email: '',
         address: '',
         city: '',
+        delegation: '',
         postalCode: '',
+        deliveryDate: '',
+        paymentMethod: '',
     });
+
+    const [availableDelegations, setAvailableDelegations] = useState([]);
 
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
@@ -62,9 +70,8 @@ const CheckoutPage = () => {
             newErrors.phone = 'Numéro de téléphone invalide (8 chiffres)';
         }
 
-        if (!formData.email.trim()) {
-            newErrors.email = 'L\'email est requis';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        // Email is now optional
+        if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Email invalide';
         }
 
@@ -76,10 +83,21 @@ const CheckoutPage = () => {
             newErrors.city = 'Le gouvernorat est requis';
         }
 
-        if (!formData.postalCode.trim()) {
-            newErrors.postalCode = 'Le code postal est requis';
-        } else if (!/^[0-9]{4}$/.test(formData.postalCode)) {
+        if (!formData.delegation) {
+            newErrors.delegation = 'La délégation est requise';
+        }
+
+        // Postal code is optional, but if filled must be valid
+        if (formData.postalCode.trim() && !/^[0-9]{4}$/.test(formData.postalCode)) {
             newErrors.postalCode = 'Code postal invalide (4 chiffres)';
+        }
+
+        if (!formData.deliveryDate) {
+            newErrors.deliveryDate = 'La date de livraison est requise';
+        }
+
+        if (!formData.paymentMethod) {
+            newErrors.paymentMethod = 'Le mode de paiement est requis';
         }
 
         setErrors(newErrors);
@@ -89,6 +107,13 @@ const CheckoutPage = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Update available delegations when governorate changes
+        if (name === 'city') {
+            const delegations = getDelegationsByGovernorate(value);
+            setAvailableDelegations(delegations);
+            setFormData(prev => ({ ...prev, delegation: '' })); // Reset delegation
+        }
 
         // Clear error for this field
         if (errors[name]) {
@@ -117,9 +142,12 @@ const CheckoutPage = () => {
                 shippingAddress: {
                     address: formData.address,
                     city: formData.city,
+                    delegation: formData.delegation,
                     postalCode: formData.postalCode,
                     country: 'Tunisie',
                 },
+                deliveryDate: formData.deliveryDate,
+                paymentMethod: formData.paymentMethod,
                 items: cart.items.map(item => ({
                     product: item.product._id,
                     quantity: item.quantity,
@@ -244,7 +272,7 @@ const CheckoutPage = () => {
                                     {/* Email */}
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            Email <span className="text-red-500">*</span>
+                                            Email <span className="text-gray-400">(Optionnel)</span>
                                         </label>
                                         <div className="relative">
                                             <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -325,10 +353,41 @@ const CheckoutPage = () => {
                                             )}
                                         </div>
 
+                                        {/* Delegation */}
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                                Délégation <span className="text-red-500">*</span>
+                                            </label>
+                                            <div className="relative">
+                                                <MapPinIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                                <select
+                                                    name="delegation"
+                                                    value={formData.delegation}
+                                                    onChange={handleInputChange}
+                                                    disabled={!formData.city}
+                                                    className={`w-full pl-10 pr-4 py-3 border ${errors.delegation ? 'border-red-500' : 'border-gray-300'
+                                                        } rounded-lg focus:ring-2 focus:ring-[#5d1115] focus:border-transparent transition-all appearance-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed`}
+                                                >
+                                                    <option value="">Sélectionner...</option>
+                                                    {availableDelegations.map((delegation) => (
+                                                        <option key={delegation} value={delegation}>
+                                                            {delegation}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            {errors.delegation && (
+                                                <p className="text-red-500 text-sm mt-1">{errors.delegation}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                                         {/* Postal Code */}
                                         <div>
                                             <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                                Code postal <span className="text-red-500">*</span>
+                                                Code postal <span className="text-gray-400">(Optionnel)</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -344,6 +403,111 @@ const CheckoutPage = () => {
                                                 <p className="text-red-500 text-sm mt-1">{errors.postalCode}</p>
                                             )}
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Delivery Date & Payment Method */}
+                            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 bg-[#fdf9ee] rounded-lg">
+                                        <CalendarIcon className="w-6 h-6 text-[#5d1115]" />
+                                    </div>
+                                    <h2 className="text-xl font-bold text-gray-900">Détails de livraison et paiement</h2>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {/* Delivery Date */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                            Date de livraison souhaitée <span className="text-red-500">*</span>
+                                        </label>
+                                        <div className="relative">
+                                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                            <input
+                                                type="date"
+                                                name="deliveryDate"
+                                                value={formData.deliveryDate}
+                                                onChange={handleInputChange}
+                                                min={new Date().toISOString().split('T')[0]}
+                                                className={`w-full pl-10 pr-4 py-3 border ${errors.deliveryDate ? 'border-red-500' : 'border-gray-300'
+                                                    } rounded-lg focus:ring-2 focus:ring-[#5d1115] focus:border-transparent transition-all`}
+                                            />
+                                        </div>
+                                        {errors.deliveryDate && (
+                                            <p className="text-red-500 text-sm mt-1">{errors.deliveryDate}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Payment Method */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                            Mode de paiement <span className="text-red-500">*</span>
+                                        </label>
+                                        <div className="space-y-3">
+                                            {/* Check */}
+                                            <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                                                formData.paymentMethod === 'check'
+                                                    ? 'border-[#5d1115] bg-[#fdf9ee]'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                            }`}>
+                                                <input
+                                                    type="radio"
+                                                    name="paymentMethod"
+                                                    value="check"
+                                                    checked={formData.paymentMethod === 'check'}
+                                                    onChange={handleInputChange}
+                                                    className="w-4 h-4 text-[#5d1115] focus:ring-[#5d1115]"
+                                                />
+                                                <div className="ml-3 flex items-center">
+                                                    <CreditCardIcon className="w-5 h-5 text-[#5d1115] mr-2" />
+                                                    <span className="font-medium text-gray-900">Chèque</span>
+                                                </div>
+                                            </label>
+
+                                            {/* TPE */}
+                                            <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                                                formData.paymentMethod === 'tpe'
+                                                    ? 'border-[#5d1115] bg-[#fdf9ee]'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                            }`}>
+                                                <input
+                                                    type="radio"
+                                                    name="paymentMethod"
+                                                    value="tpe"
+                                                    checked={formData.paymentMethod === 'tpe'}
+                                                    onChange={handleInputChange}
+                                                    className="w-4 h-4 text-[#5d1115] focus:ring-[#5d1115]"
+                                                />
+                                                <div className="ml-3 flex items-center">
+                                                    <CreditCardIcon className="w-5 h-5 text-[#5d1115] mr-2" />
+                                                    <span className="font-medium text-gray-900">TPE (Terminal de Paiement Électronique)</span>
+                                                </div>
+                                            </label>
+
+                                            {/* Cash */}
+                                            <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                                                formData.paymentMethod === 'cash'
+                                                    ? 'border-[#5d1115] bg-[#fdf9ee]'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                            }`}>
+                                                <input
+                                                    type="radio"
+                                                    name="paymentMethod"
+                                                    value="cash"
+                                                    checked={formData.paymentMethod === 'cash'}
+                                                    onChange={handleInputChange}
+                                                    className="w-4 h-4 text-[#5d1115] focus:ring-[#5d1115]"
+                                                />
+                                                <div className="ml-3 flex items-center">
+                                                    <CreditCardIcon className="w-5 h-5 text-[#5d1115] mr-2" />
+                                                    <span className="font-medium text-gray-900">Espèce (Cash)</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        {errors.paymentMethod && (
+                                            <p className="text-red-500 text-sm mt-1">{errors.paymentMethod}</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

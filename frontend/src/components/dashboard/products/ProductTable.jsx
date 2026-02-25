@@ -107,7 +107,7 @@ const ProductTable = ({ products, loading, onEdit, onDelete, onToggleBestseller,
                       <div>
                         <div className="font-medium text-gray-900">{product.name}</div>
                         <div className="text-sm text-gray-500">
-                          {product.colors?.length || 0} couleur(s) • {product.sizes?.available?.length || 0} taille(s)
+                          SKU: {product._id.slice(-8).toUpperCase()}
                         </div>
                       </div>
                     </div>

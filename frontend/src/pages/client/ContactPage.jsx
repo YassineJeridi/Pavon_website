@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Mail,
   Phone,
   MapPin,
   Send,
@@ -12,10 +11,15 @@ import {
   AlertCircle,
   Instagram,
   Facebook,
-  Twitter,
   Sparkles
 } from 'lucide-react';
 import contactService from '../../services/contactService';
+
+const TikTokIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.27 8.27 0 0 0 4.83 1.55V6.79a4.85 4.85 0 0 1-1.06-.1z"/>
+  </svg>
+);
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -64,20 +68,14 @@ const ContactPage = () => {
     {
       icon: MapPin,
       title: 'Adresse',
-      content: '123 Avenue des Champs-Élysées\n75008 Paris, France',
+      content: 'bni khiar Nabeul',
       color: 'from-[#5d1115] to-[#111f35]',
     },
     {
       icon: Phone,
       title: 'Téléphone',
-      content: '+33 1 23 45 67 89\nLun-Sam: 9h-19h',
+      content: '26182833\nLun-Sam: 9h-19h',
       color: 'from-[#111f35] to-[#5d1115]',
-    },
-    {
-      icon: Mail,
-      title: 'Email',
-      content: 'contact@elegance.fr\nsupport@elegance.fr',
-      color: 'from-[#5d1115] to-[#e8ddca]',
     },
     {
       icon: Clock,
@@ -88,9 +86,9 @@ const ContactPage = () => {
   ];
 
   const socialLinks = [
-    { icon: Instagram, url: 'https://instagram.com', label: 'Instagram', color: 'hover:text-[#5d1115]' },
-    { icon: Facebook, url: 'https://facebook.com', label: 'Facebook', color: 'hover:text-[#111f35]' },
-    { icon: Twitter, url: 'https://twitter.com', label: 'Twitter', color: 'hover:text-[#e8ddca]' },
+    { icon: Instagram, url: 'https://www.instagram.com/pavone.collection/', label: 'Instagram', color: 'hover:text-[#5d1115]' },
+    { icon: Facebook, url: 'https://www.facebook.com/profile.php?id=61587174009708', label: 'Facebook', color: 'hover:text-[#111f35]' },
+    { icon: TikTokIcon, url: 'https://www.tiktok.com/@pavone.collection', label: 'TikTok', color: 'hover:text-black' },
   ];
 
   return (
@@ -376,39 +374,7 @@ const ContactPage = () => {
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="relative py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[#5d1115] to-[#111f35] bg-clip-text text-transparent">
-              Visitez Notre Boutique
-            </h2>
-            <p className="text-gray-600 text-lg">123 Avenue des Champs-Élysées, Paris</p>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="rounded-3xl overflow-hidden shadow-2xl h-[500px]"
-          >
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.2919184348567!2d2.3059084!3d48.8698679!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66fec70fb1d8d%3A0x40b82c3688c9460!2sChamps-%C3%89lys%C3%A9es%2C%20Paris%2C%20France!5e0!3m2!1sen!2s!4v1234567890123"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </motion.div>
-        </div>
-      </section>
     </div>
   );
 };

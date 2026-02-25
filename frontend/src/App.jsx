@@ -22,6 +22,7 @@ import CheckoutPage from './pages/client/CheckoutPage';
 // Dashboard Pages
 import DashboardHome from './pages/dashboard/DashboardHome';
 import DashboardProducts from './pages/dashboard/DashboardProducts';
+import DashboardStock from './pages/dashboard/DashboardStock';
 import DashboardOrders from './pages/dashboard/DashboardOrders';
 import DashboardBanners from './pages/dashboard/DashboardBanners';
 import DashboardCollections from './pages/dashboard/DashboardCollections';
@@ -74,6 +75,7 @@ function App() {
                 >
                   <Route index element={<DashboardHome />} />
                   <Route path="products" element={<DashboardProducts />} />
+                  <Route path="stock" element={<DashboardStock />} />
                   <Route path="orders" element={<DashboardOrders />} />
                   <Route path="banners" element={<DashboardBanners />} />
                   <Route path="top-banner" element={<DashboardTopBanner />} />

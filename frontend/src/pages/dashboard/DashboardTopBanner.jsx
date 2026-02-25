@@ -19,7 +19,7 @@ const DashboardTopBanner = () => {
   });
 
   useEffect(() => {
-    document.title = 'Bannière Supérieure - Pavon Admin';
+    document.title = 'Bannière Supérieure - Pavone Admin';
     fetchBanners();
   }, []);
 
@@ -123,7 +123,7 @@ const DashboardTopBanner = () => {
     }
   };
 
-  const activeBanner = banners.find(b => b.isActive);
+  const activeBanners = banners.filter(b => b.isActive);
 
   if (loading) {
     return (
@@ -161,8 +161,8 @@ const DashboardTopBanner = () => {
         </motion.button>
       </motion.div>
 
-      {/* Active Banner Preview */}
-      {activeBanner && (
+      {/* Active Banners Preview */}
+      {activeBanners.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -170,10 +170,12 @@ const DashboardTopBanner = () => {
         >
           <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
             <Eye className="w-5 h-5 text-green-600" />
-            Aperçu de la bannière active
+            Aperçu des bannières actives ({activeBanners.length})
           </h2>
-          <div className="bg-gradient-to-r from-[#5d1115] to-[#111f35] text-white py-3 px-6 rounded-xl">
-            <p className="text-center text-sm md:text-base font-medium">{activeBanner.text}</p>
+          <div className="bg-gradient-to-r from-[#5d1115] to-[#111f35] text-white py-3 px-6 rounded-xl overflow-hidden whitespace-nowrap">
+            <p className="text-center text-sm md:text-base font-medium">
+              {activeBanners.map(b => b.text).join('   ★   ')}
+            </p>
           </div>
         </motion.div>
       )}
@@ -344,7 +346,7 @@ const DashboardTopBanner = () => {
                   />
                   <label htmlFor="isActive" className="text-sm font-medium text-gray-700 cursor-pointer">
                     Activer cette bannière
-                    {!editingBanner && <span className="text-gray-500 ml-2">(désactivera les autres)</span>}
+                    {!editingBanner && <span className="text-gray-500 ml-2">(plusieurs bannières peuvent être actives)</span>}
                   </label>
                 </div>
 

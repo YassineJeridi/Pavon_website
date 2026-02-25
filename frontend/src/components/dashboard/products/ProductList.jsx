@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import productService from '../../../services/productService';
 import ProductTable from './ProductTable';
 import ProductFormNew from './ProductFormNew';
+import Pagination from '../common/Pagination';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
 const ProductList = () => {
@@ -92,6 +93,14 @@ const ProductList = () => {
 
   const handlePageChange = (newPage) => {
     setPagination(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleItemsPerPageChange = (newLimit) => {
+    setPagination(prev => ({
+      ...prev,
+      limit: newLimit,
+      page: 1, // Reset to first page when changing items per page
+    }));
   };
 
   const handleCreate = () => {
@@ -186,7 +195,7 @@ const ProductList = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Produits</h1>
           <p className="mt-1 text-sm text-gray-600">
-            {filteredProducts.length} produit(s) • {products.length} total
+            {filteredProducts.length} résultat(s) affiché(s) • {pagination.total} total
           </p>
         </div>
         <button
@@ -264,95 +273,15 @@ const ProductList = () => {
       />
 
       {/* Pagination */}
-      {!loading && pagination.pages > 1 && (
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-b-lg">
-          <div className="flex-1 flex justify-between sm:hidden">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Précédent
-            </button>
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page === pagination.pages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Suivant
-            </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Affichage de{' '}
-                <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span>
-                {' à '}
-                <span className="font-medium">
-                  {Math.min(pagination.page * pagination.limit, pagination.total)}
-                </span>
-                {' sur '}
-                <span className="font-medium">{pagination.total}</span>
-                {' produits'}
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  onClick={() => handlePageChange(pagination.page - 1)}
-                  disabled={pagination.page === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span className="sr-only">Précédent</span>
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                
-                {[...Array(pagination.pages)].map((_, index) => {
-                  const pageNum = index + 1;
-                  // Show first page, last page, current page, and pages around current
-                  const showPage = pageNum === 1 || 
-                                  pageNum === pagination.pages || 
-                                  Math.abs(pageNum - pagination.page) <= 1;
-                  
-                  if (!showPage && pageNum === 2) {
-                    return <span key={pageNum} className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>;
-                  }
-                  if (!showPage && pageNum === pagination.pages - 1) {
-                    return <span key={pageNum} className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>;
-                  }
-                  if (!showPage) return null;
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        pagination.page === pageNum
-                          ? 'z-10 bg-gray-900 border-gray-900 text-white'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-                
-                <button
-                  onClick={() => handlePageChange(pagination.page + 1)}
-                  disabled={pagination.page === pagination.pages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span className="sr-only">Suivant</span>
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
+      {!loading && pagination.total > 0 && (
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={pagination.pages}
+          totalItems={pagination.total}
+          itemsPerPage={pagination.limit}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
       )}
 
       {/* Product Form Modal */}

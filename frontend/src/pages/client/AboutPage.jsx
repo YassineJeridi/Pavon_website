@@ -9,7 +9,6 @@ import {
   TrendingUp,
   Shield,
   Zap,
-  Target,
   Globe
 } from 'lucide-react';
 
@@ -57,14 +56,6 @@ const AboutPage = () => {
     { number: '50K+', label: 'Clients Satisfaits', icon: Users },
     { number: '200+', label: 'Collections Créées', icon: Sparkles },
     { number: '98%', label: 'Taux de Satisfaction', icon: Heart },
-  ];
-
-  // Timeline data
-  const timeline = [
-    { year: '2010', title: 'La Naissance', description: 'Fondation de notre maison de couture à Paris' },
-    { year: '2015', title: 'Expansion', description: 'Ouverture de boutiques dans toute l\'Europe' },
-    { year: '2020', title: 'Innovation', description: 'Lancement de notre plateforme e-commerce' },
-    { year: '2026', title: 'Vision Globale', description: 'Présence internationale et engagement durable' },
   ];
 
   return (
@@ -117,7 +108,7 @@ const AboutPage = () => {
             >
               <Sparkles className="w-5 h-5 text-[#5d1115]" />
               <span className="text-[#111f35] font-semibold uppercase text-sm tracking-wider">
-                Notre Histoire
+                Pavone Collection
               </span>
             </motion.div>
 
@@ -128,7 +119,10 @@ const AboutPage = () => {
               className="text-6xl md:text-7xl font-bold mb-8"
             >
               <span className="text-[#111f35]">
-                L'Art de l'Élégance
+                Mode, Style &
+              </span>{' '}
+              <span className="bg-gradient-to-r from-[#5d1115] to-[#111f35] bg-clip-text text-transparent">
+                Élégance
               </span>
             </motion.h1>
 
@@ -138,8 +132,9 @@ const AboutPage = () => {
               transition={{ delay: 0.4 }}
               className="text-xl text-gray-600 leading-relaxed"
             >
-              Depuis 2010, nous créons des pièces exceptionnelles qui célèbrent la beauté,
-              l'authenticité et l'individualité. Chaque création raconte une histoire unique.
+              Chez Pavone Collection, nous créons des vêtements pour hommes et femmes
+              qui allient modernité et tradition — parce que chaque tenue est une façon
+              unique d'exprimer qui vous êtes.
             </motion.p>
           </motion.div>
         </div>
@@ -200,20 +195,23 @@ const AboutPage = () => {
               transition={{ duration: 0.8 }}
             >
               <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-[#5d1115] to-[#111f35] bg-clip-text text-transparent">
-                Une Passion Devenue Réalité
+                À propos de Pavone Collection
               </h2>
               <p className="text-gray-600 text-lg mb-6 leading-relaxed">
-                Tout a commencé dans un petit atelier parisien, où notre fondatrice Maria
-                Dubois a transformé sa passion pour la couture en une marque qui redéfinit
-                l'élégance moderne.
+                Bienvenue chez Pavone Collection, votre boutique en ligne dédiée à la mode
+                pour hommes et femmes. Nous allions modernité et tradition pour vous offrir
+                des vêtements uniques qui reflètent votre style et votre personnalité.
               </p>
               <p className="text-gray-600 text-lg mb-6 leading-relaxed">
-                Aujourd'hui, Élégance est reconnue internationalement pour ses créations
-                intemporelles qui allient savoir-faire traditionnel et innovation contemporaine.
+                Notre collection propose une diversité de choix, allant des tenues classiques
+                aux pièces modernes et tendance, afin que chacun trouve son look idéal.
+                Chez Pavone Collection, nous croyons que la mode est une manière de s'exprimer
+                tout en restant fidèle à ses racines.
               </p>
               <p className="text-gray-600 text-lg leading-relaxed">
-                Chaque pièce est conçue avec amour, attention aux détails et un engagement
-                indéfectible envers la qualité et l'authenticité.
+                Pavone Collection allie modernité et tradition pour hommes et femmes, offrant
+                une diversité de vêtements élégants et uniques qui reflètent style, personnalité
+                et confort au quotidien.
               </p>
             </motion.div>
           </div>
@@ -308,62 +306,6 @@ const AboutPage = () => {
                 </motion.div>
               );
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* Timeline Section */}
-      <section className="relative py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-20"
-          >
-            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-[#5d1115] to-[#111f35] bg-clip-text text-transparent">
-              Notre Parcours
-            </h2>
-            <p className="text-gray-600 text-xl">Une histoire d'innovation et de passion</p>
-          </motion.div>
-
-          <div className="space-y-16">
-            {timeline.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className={`flex items-center gap-8 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                  }`}
-              >
-                <div className="flex-1">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100"
-                  >
-                    <div className="text-5xl font-bold bg-gradient-to-r from-[#5d1115] to-[#111f35] bg-clip-text text-transparent mb-4">
-                      {item.year}
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                    <p className="text-gray-600 text-lg">{item.description}</p>
-                  </motion.div>
-                </div>
-
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3, type: 'spring' }}
-                  className="w-16 h-16 rounded-full bg-gradient-to-br from-[#5d1115] to-[#111f35] flex items-center justify-center shadow-2xl"
-                >
-                  <Target className="w-8 h-8 text-white" />
-                </motion.div>
-
-                <div className="flex-1" />
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>

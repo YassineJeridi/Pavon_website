@@ -2,7 +2,7 @@
 import api from './api';
 
 const topBannerService = {
-  // Get active top banner (Public)
+  // Get all active top banners (Public)
   getActive: async () => {
     const response = await api.get('/top-banner/active');
     return response.data;

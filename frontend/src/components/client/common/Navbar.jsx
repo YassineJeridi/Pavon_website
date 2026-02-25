@@ -57,7 +57,7 @@ const Navbar = () => {
         animate={{ y: 0 }}
         className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled
           ? 'bg-white/95 backdrop-blur-md shadow-lg'
-          : 'bg-white'
+          : 'bg-white shadow-sm'
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,11 +68,13 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-3"
               >
-                <img
-                  src="/src/assets/Pavon_logo.png"
-                  alt="Pavon Logo"
-                  className="h-12 w-auto"
-                />
+                <div className="h-12 w-12 rounded-full overflow-hidden flex items-center justify-center">
+                  <img
+                    src="/src/assets/Pavon_logo.png"
+                    alt="Pavon Logo"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
 
               </motion.div>
             </Link>

@@ -1,0 +1,67 @@
+/* frontend/src/components/client/home/TopBanner.css */
+
+.top-banner-container {
+  position: relative;
+  width: 100%;
+  z-index: 50;
+  background: linear-gradient(to right, #5d1115, #111f35);
+  color: white;
+  padding: 0.625rem 0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Centered banner text */
+.top-banner-content {
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 0 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .top-banner-content {
+    font-size: 1rem;
+  }
+}
+
+/* Clickable banner text with a link */
+.top-banner-link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s ease;
+}
+
+.top-banner-link:hover {
+  opacity: 0.8;
+}
+
+.top-banner-close {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.375rem;
+  background-color: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.top-banner-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.top-banner-close:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
