@@ -271,7 +271,7 @@ const Footer = () => {
               <span className="flex items-center space-x-1">
                 <span>Developed by</span>
                 <a 
-                  href="https://www.instagram.com/redixdigitalsolutions/" 
+                  href="https://redixdigitalsolutions.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-pink-500 hover:text-pink-400 transition-colors font-medium"
