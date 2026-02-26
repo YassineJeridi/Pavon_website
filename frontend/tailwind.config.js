@@ -125,6 +125,5 @@ export default {
       strategy: 'class',
     }),
     require('@tailwindcss/aspect-ratio'),
-    require('@tailwindcss/line-clamp'),
   ],
 }

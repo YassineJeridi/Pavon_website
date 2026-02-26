@@ -70,7 +70,7 @@ const Navbar = () => {
               >
                 <div className="h-12 w-12 rounded-full overflow-hidden flex items-center justify-center">
                   <img
-                    src="/src/assets/Pavon_logo.png"
+                    src="/assets/Pavon_logo.png"
                     alt="Pavon Logo"
                     className="h-full w-full object-cover"
                   />
