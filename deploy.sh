@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pavon Collection Website Deployment Script
+# Pavone Collection Website Deployment Script
 # This script automates pulling code, installing dependencies, and restarting services
 
 set -e  # Exit on error
@@ -36,7 +36,7 @@ warning() {
 # Main deployment process
 main() {
     log "=========================================="
-    log "Starting Pavon Collection Deployment"
+    log "Starting Pavone Collection Deployment"
     log "=========================================="
     
     # Check if running as root or with sudo

@@ -74,7 +74,15 @@ app.use('/api/external-orders', require('./router/externalOrders')); // ✅ Exte
 
 
 // ====== STATIC FILES (uploads) ======
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Explicitly decode URL before serving so files with spaces/accents in names work
+app.use('/uploads', (req, res, next) => {
+  try {
+    req.url = decodeURIComponent(req.url);
+  } catch (e) {
+    // Invalid encoding — leave as-is
+  }
+  next();
+}, express.static(path.join(__dirname, 'uploads')));
 
 // ====== HEALTH CHECK ======
 app.get('/api/health', (req, res) => {

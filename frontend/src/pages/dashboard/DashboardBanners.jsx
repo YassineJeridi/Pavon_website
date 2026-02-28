@@ -5,7 +5,7 @@ import BannerManagerNew from '../../components/dashboard/banners/BannerManagerNe
 
 const DashboardBanners = () => {
   useEffect(() => {
-    document.title = 'Bannières - Élégance Admin';
+    document.title = 'Bannières - Pavone Collection Admin';
   }, []);
 
   return (

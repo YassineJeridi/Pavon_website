@@ -44,7 +44,7 @@ router.get('/health', (req, res) => {
 router.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Élégance API',
+    message: 'Pavone Collection API',
     version: '1.0.0',
     endpoints: {
       products: '/api/products',

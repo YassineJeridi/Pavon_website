@@ -15,7 +15,7 @@ const DashboardContacts = () => {
   const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
-    document.title = 'Messages - Pavon Admin';
+    document.title = 'Messages - Pavone Admin';
     fetchContacts();
   }, []);
 

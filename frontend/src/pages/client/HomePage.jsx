@@ -10,7 +10,7 @@ import CustomerFeedback from '../../components/client/home/CustomerFeedback';
 
 const HomePage = () => {
   useEffect(() => {
-    document.title = 'Élégance - Vêtements de Luxe Français';
+    document.title = 'Pavone Collection - Vêtements de Luxe Français';
     window.scrollTo(0, 0);
   }, []);
 

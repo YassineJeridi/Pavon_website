@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Frontend for Élégance e-commerce platform",
+  "description": "Frontend for Pavone Collection e-commerce platform",
   "author": "Redix Digital Solution",
   "license": "MIT",
   "scripts": {

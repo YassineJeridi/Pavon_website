@@ -5,7 +5,7 @@ import ProductList from '../../components/dashboard/products/ProductList';
 
 const DashboardProducts = () => {
   useEffect(() => {
-    document.title = 'Produits - Élégance Admin';
+    document.title = 'Produits - Pavone Collection Admin';
   }, []);
 
   return (

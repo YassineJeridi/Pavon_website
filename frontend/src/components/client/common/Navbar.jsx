@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../../hooks/useCart';
 import { useWishlist } from '../../../hooks/useWishlist';
+import PavonLogo from '../../../assets/Pavon_logo.png';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -70,8 +71,8 @@ const Navbar = () => {
               >
                 <div className="h-12 w-12 rounded-full overflow-hidden flex items-center justify-center">
                   <img
-                    src="/assets/Pavon_logo.png"
-                    alt="Pavon Logo"
+                    src={PavonLogo}
+                    alt="Pavone Logo"
                     className="h-full w-full object-cover"
                   />
                 </div>

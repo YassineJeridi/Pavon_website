@@ -38,7 +38,7 @@ const DashboardExternalOrders = () => {
 
   // ── Page title ─────────────────────────────────
   useEffect(() => {
-    document.title = 'Commandes Externes - Pavon Admin';
+    document.title = 'Commandes Externes - Pavone Admin';
   }, []);
 
   // ── Notifications ──────────────────────────────

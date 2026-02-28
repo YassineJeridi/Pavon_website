@@ -1,6 +1,7 @@
 // frontend/src/components/client/layout/Footer.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PavonLogo from '../../../assets/Pavon_logo.png';
 import { motion } from 'framer-motion';
 import {
   Phone,
@@ -51,12 +52,6 @@ const Footer = () => {
       { name: 'Notre Histoire', path: '/about#story' },
       { name: 'Carrières', path: '/careers' },
       { name: 'Presse', path: '/press' },
-    ],
-    legal: [
-      { name: 'CGV', path: '/cgv' },
-      { name: 'Mentions Légales', path: '/mentions' },
-      { name: 'Confidentialité', path: '/privacy' },
-      { name: 'Cookies', path: '/cookies' },
     ],
   };
 
@@ -173,7 +168,7 @@ const Footer = () => {
                 >
                   <div className="h-12 w-12 rounded-full overflow-hidden flex items-center justify-center bg-white">
                     <img
-                      src="/assets/Pavon_logo.png"
+                      src={PavonLogo}
                       alt="Pavone Logo"
                       className="h-full w-full object-cover"
                     />
@@ -278,20 +273,19 @@ const Footer = () => {
                 >
                   Redix Digital Solution
                 </a>
+                <span>&</span>
+                <a 
+          
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-pink-500 hover:text-pink-400 transition-colors font-medium"
+                >
+                  DotComAgency
+                </a>
               </span>
             </p>
 
-            <div className="flex items-center space-x-6 text-sm text-white/70">
-              <Link to="/cgv" className="hover:text-white transition-colors">
-                CGV
-              </Link>
-              <Link to="/privacy" className="hover:text-white transition-colors">
-                Confidentialité
-              </Link>
-              <Link to="/cookies" className="hover:text-white transition-colors">
-                Cookies
-              </Link>
-            </div>
+
           </div>
         </div>
       </div>

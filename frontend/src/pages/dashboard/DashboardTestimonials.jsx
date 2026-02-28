@@ -77,7 +77,7 @@ const DashboardTestimonials = () => {
             isFeatured: t.isFeatured,
             avatar: null
         });
-        setAvatarPreview(t.avatar ? `http://localhost:5000${t.avatar}` : null);
+        setAvatarPreview(t.avatar ? `${(import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api').replace(/\/api$/, '')}${t.avatar}` : null);
         setShowModal(true);
     };
 
@@ -211,7 +211,7 @@ const DashboardTestimonials = () => {
                                 <div className="flex justify-center mb-4">
                                     {t.avatar ? (
                                         <img
-                                            src={`http://localhost:5000${t.avatar}`}
+                                            src={`${(import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api').replace(/\/api$/, '')}${t.avatar}`}
                                             alt={t.name}
                                             className="w-20 h-20 rounded-full object-cover border-4 border-[#e8ddca] shadow-md"
                                             onError={(e) => {

@@ -33,7 +33,7 @@ const ContactPage = () => {
   const [status, setStatus] = useState({ type: '', message: '' });
 
   useEffect(() => {
-    document.title = 'Contact - Élégance';
+    document.title = 'Contact - Pavone Collection';
     window.scrollTo(0, 0);
   }, []);
 
@@ -159,7 +159,7 @@ const ContactPage = () => {
               className="text-xl text-gray-600 leading-relaxed"
             >
               Notre équipe est à votre écoute pour répondre à toutes vos questions
-              et vous accompagner dans votre expérience Élégance.
+              et vous accompagner dans votre expérience Pavone Collection.
             </motion.p>
           </motion.div>
         </div>

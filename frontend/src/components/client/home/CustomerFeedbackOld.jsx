@@ -112,7 +112,7 @@ const CustomerFeedback = () => {
             </span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Ce que nos clients disent de leur expérience avec Élégance
+            Ce que nos clients disent de leur expérience avec Pavone Collection
           </p>
         </motion.div>
 

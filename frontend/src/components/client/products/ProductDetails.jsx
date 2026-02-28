@@ -39,8 +39,23 @@ const ProductDetails = ({ product }) => {
   };
 
 const handleAddToCart = async () => {
-  // Check if product has colors/sizes options
   const hasColors = product.colors && product.colors.length > 0;
+
+  // Parse stored color string "Label|#hex" or legacy French name
+  const frenchColorMap = {
+    'Noir': '#000000', 'Blanc': '#FFFFFF', 'Rouge': '#E53E3E', 'Bleu': '#3B82F6',
+    'Vert': '#22C55E', 'Jaune': '#EAB308', 'Rose': '#EC4899', 'Gris': '#6B7280',
+    'Marron': '#92400E', 'Orange': '#F97316', 'Beige': '#D2B48C', 'Crème': '#FFFDD0',
+    'Marine': '#1E3A5F', 'Bordeaux': '#800020', 'Camel': '#C19A6B',
+  };
+  const parseColor = (colorStr) => {
+    if (!colorStr) return { label: colorStr, hex: '#cccccc' };
+    if (colorStr.includes('|')) {
+      const [label, hex] = colorStr.split('|');
+      return { label, hex };
+    }
+    return { label: colorStr, hex: frenchColorMap[colorStr] || '#cccccc' };
+  };
   const hasSizes = product.sizes && product.sizes.length > 0;
   
   // Only validate if product has these options
@@ -79,7 +94,7 @@ const [selectedSize, setSelectedSize] = useState(hasSizes ? product.sizes[0] : '
 
   const handleShare = (platform) => {
     const url = window.location.href;
-    const text = `Découvrez ${product.name} sur Élégance`;
+    const text = `Découvrez ${product.name} sur Pavone Collection`;
     
     switch (platform) {
       case 'facebook':
@@ -316,28 +331,32 @@ const [selectedSize, setSelectedSize] = useState(hasSizes ? product.sizes[0] : '
             <div>
               <div className="flex items-center justify-between mb-4">
                 <label className="text-sm font-bold text-gray-900">
-                  Couleur: <span className="text-purple-600">{selectedColor}</span>
+                  Couleur: <span className="text-purple-600">{parseColor(selectedColor).label}</span>
                 </label>
               </div>
               <div className="flex flex-wrap gap-3">
-                {product.colors.map((color, index) => (
+                {product.colors.map((color, index) => {
+                  const { label, hex } = parseColor(color);
+                  return (
                   <motion.button
                     key={index}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedColor(color)}
+                    title={label}
                     className={`relative w-12 h-12 rounded-full border-2 transition-all ${
                       selectedColor === color
                         ? 'border-purple-600 ring-2 ring-purple-200'
                         : 'border-gray-200 hover:border-gray-400'
                     }`}
-                    style={{ backgroundColor: color }}
+                    style={{ backgroundColor: hex }}
                   >
                     {selectedColor === color && (
                       <Check className="absolute inset-0 m-auto w-6 h-6 text-white drop-shadow-lg" />
                     )}
                   </motion.button>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

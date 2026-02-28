@@ -19,7 +19,7 @@ const DashboardLogin = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    document.title = 'Connexion - Élégance Admin';
+    document.title = 'Connexion - Pavone Collection Admin';
     
     // Redirect if already authenticated
     if (isAuthenticated && !loading) {
@@ -138,7 +138,7 @@ const DashboardLogin = () => {
 
         {/* Footer */}
         <p className="text-center text-sm text-gray-500">
-          © 2026 Élégance. Tous droits réservés.
+          © 2026 Pavone Collection. Tous droits réservés.
         </p>
       </div>
     </div>

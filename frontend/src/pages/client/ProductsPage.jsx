@@ -48,7 +48,7 @@ const ProductsPage = () => {
   const filtersKey = useMemo(() => JSON.stringify(filters), [filters]);
 
   useEffect(() => {
-    document.title = 'Nos Produits - Élégance';
+    document.title = 'Nos Produits - Pavone Collection';
   }, []);
 
   // Debounced fetch — uses filtersKey (string) instead of filters (object)

@@ -25,7 +25,7 @@ const DashboardCategories = () => {
   });
 
   useEffect(() => {
-    document.title = 'Catégories - Pavon Admin';
+    document.title = 'Catégories - Pavone Admin';
     fetchCategories();
   }, []);
 

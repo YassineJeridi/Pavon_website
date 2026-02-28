@@ -260,7 +260,7 @@ const DashboardFinancials = () => {
 
   // ── Page title ─────────────────────────────────
   useEffect(() => {
-    document.title = 'Statistiques & Charges - Pavon Admin';
+    document.title = 'Statistiques & Charges - Pavone Admin';
   }, []);
 
   // ── Notifications ──────────────────────────────

@@ -17,7 +17,7 @@ const Admin = mongoose.models.Admin || mongoose.model('Admin', adminSchema);
 
 const adminData = {
   firstName: 'Admin',        // ✅ Added
-  lastName: 'Élégance',      // ✅ Added
+  lastName: 'Pavone Collection',      // ✅ Added
   email: 'admin@elegance.tn',
   password: 'Admin@123456',
   role: 'super_admin',

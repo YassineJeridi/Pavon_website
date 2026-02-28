@@ -72,7 +72,7 @@ const sendOrderConfirmation = async (order) => {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Élégance</h1>
+          <h1>Pavone Collection</h1>
         </div>
         <div class="content">
           <h2>Merci pour votre commande !</h2>
@@ -130,7 +130,7 @@ const sendOrderConfirmation = async (order) => {
           <p>Nous vous informerons dès que votre commande sera expédiée.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Élégance. Tous droits réservés.</p>
+          <p>© ${new Date().getFullYear()} Pavone Collection. Tous droits réservés.</p>
           <p>Pour toute question, contactez-nous à contact@elegance.tn</p>
         </div>
       </div>
@@ -169,12 +169,12 @@ const sendContactAutoReply = async (contact) => {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Élégance</h1>
+          <h1>Pavone Collection</h1>
         </div>
         <div class="content">
           <h2>Merci de nous avoir contactés !</h2>
           <p>Bonjour ${contact.name},</p>
-          <p>Nous avons bien reçu votre message et nous vous remercions de l'intérêt que vous portez à Élégance.</p>
+          <p>Nous avons bien reçu votre message et nous vous remercions de l'intérêt que vous portez à Pavone Collection.</p>
           <p>Notre équipe prendra connaissance de votre demande et vous répondra dans les plus brefs délais (généralement sous 24-48 heures).</p>
           <p><strong>Votre message:</strong></p>
           <p style="background-color: #fff; padding: 15px; border-left: 3px solid #000;">
@@ -182,7 +182,7 @@ const sendContactAutoReply = async (contact) => {
           </p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Élégance. Tous droits réservés.</p>
+          <p>© ${new Date().getFullYear()} Pavone Collection. Tous droits réservés.</p>
         </div>
       </div>
     </body>

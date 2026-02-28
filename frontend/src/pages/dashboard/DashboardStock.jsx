@@ -28,7 +28,7 @@ const DashboardStock = () => {
   });
 
   useEffect(() => {
-    document.title = 'Gestion du Stock - Élégance Admin';
+    document.title = 'Gestion du Stock - Pavone Collection Admin';
     fetchAllProducts(); // Fetch all for stats
     fetchProducts(); // Fetch paginated for display
   }, [pagination.page, pagination.limit]);

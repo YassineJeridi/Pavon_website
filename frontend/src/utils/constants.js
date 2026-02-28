@@ -2,7 +2,7 @@
 
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  BASE_URL: import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api',
   TIMEOUT: 15000,
 };
 
@@ -156,19 +156,19 @@ export const NOTIFICATION_DURATION = {
 
 // Social Media Links
 export const SOCIAL_LINKS = {
-  FACEBOOK: 'https://facebook.com/elegance',
-  INSTAGRAM: 'https://instagram.com/elegance',
-  TWITTER: 'https://twitter.com/elegance',
-  LINKEDIN: 'https://linkedin.com/company/elegance',
-  TIKTOK: 'https://tiktok.com/@elegance',
+  FACEBOOK: 'https://facebook.com/pavonecollection',
+  INSTAGRAM: 'https://instagram.com/pavonecollection',
+  TWITTER: 'https://twitter.com/pavonecollection',
+  LINKEDIN: 'https://linkedin.com/company/pavonecollection',
+  TIKTOK: 'https://tiktok.com/@pavonecollection',
 };
 
 // Contact Information
 export const CONTACT_INFO = {
-  EMAIL: 'contact@elegance.com',
+  EMAIL: 'contact@pavonecollection.com',
   PHONE: '+216 12 345 678',
   ADDRESS: '123 Avenue Habib Bourguiba, Tunis 1000, Tunisia',
-  SUPPORT_EMAIL: 'support@elegance.com',
+  SUPPORT_EMAIL: 'support@pavonecollection.com',
 };
 
 // Business Hours
@@ -241,8 +241,8 @@ export const SUCCESS_MESSAGES = {
 
 // SEO
 export const SEO = {
-  DEFAULT_TITLE: 'Élégance - Vêtements de Luxe Français',
-  TITLE_SUFFIX: ' | Élégance',
+  DEFAULT_TITLE: 'Pavone Collection - Vêtements de Luxe Français',
+  TITLE_SUFFIX: ' | Pavone Collection',
   DEFAULT_DESCRIPTION: 'Découvrez notre collection de vêtements de luxe français. Qualité premium, style intemporel, fabrication éthique.',
   DEFAULT_KEYWORDS: 'vêtements, mode, luxe, français, élégance, fashion',
   DEFAULT_OG_IMAGE: '/assets/og-image.jpg',

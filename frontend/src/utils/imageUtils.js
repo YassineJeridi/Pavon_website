@@ -3,7 +3,7 @@
 // Get API base URL from environment or fallback to localhost
 // Note: Remove '/api' suffix for static file serving
 const getBaseUrl = () => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api';
     // Remove '/api' suffix if present for static files
     return apiUrl.replace(/\/api$/, '');
 };
@@ -23,13 +23,20 @@ export const getImageUrl = (imagePath) => {
         return imagePath;
     }
 
+    // Encode each path segment to handle spaces and special characters
+    // e.g. "Capture d'écran 2026-01-01.png" → "Capture%20d'%C3%A9cran%202026-01-01.png"
+    const encodedPath = imagePath
+        .split('/')
+        .map(segment => encodeURIComponent(segment))
+        .join('/');
+
     // If starts with /, prepend API base URL
     if (imagePath.startsWith('/')) {
-        return `${API_BASE_URL}${imagePath}`;
+        return `${API_BASE_URL}${encodedPath}`;
     }
 
     // Otherwise, assume it needs /uploads/ prefix
-    return `${API_BASE_URL}/uploads/${imagePath}`;
+    return `${API_BASE_URL}/uploads/${encodedPath}`;
 };
 
 /**

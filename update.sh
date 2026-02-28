@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pavon Collection - Single Deployment Script
+# Pavone Collection - Single Deployment Script
 # Run this after every git push to update the website
 
 set -e
@@ -38,7 +38,7 @@ if [[ $EUID -ne 0 ]]; then
     error "Must run with sudo: sudo bash /root/Pavon_website/update.sh"
 fi
 
-section "PAVON WEBSITE DEPLOYMENT"
+section "PAVONE WEBSITE DEPLOYMENT"
 
 # Step 1: Pull latest code
 section "Step 1/5: Pulling latest code"

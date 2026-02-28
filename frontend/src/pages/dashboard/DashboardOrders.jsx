@@ -5,7 +5,7 @@ import OrderList from '../../components/dashboard/orders/OrderList';
 
 const DashboardOrders = () => {
   useEffect(() => {
-    document.title = 'Commandes - Élégance Admin';
+    document.title = 'Commandes - Pavone Collection Admin';
   }, []);
 
   return (

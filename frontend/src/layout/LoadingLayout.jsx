@@ -6,7 +6,7 @@ const LoadingLayout = () => {
       <div className="text-center">
         {/* Logo or Brand */}
         <h1 className="text-4xl font-playfair font-bold text-gray-900 mb-8">
-          Élégance
+          Pavone Collection
         </h1>
 
         {/* Spinner */}

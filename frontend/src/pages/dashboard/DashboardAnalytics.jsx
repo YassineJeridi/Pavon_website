@@ -13,7 +13,7 @@ const DashboardAnalytics = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = 'Analytiques - Élégance Admin';
+    document.title = 'Analytiques - Pavone Collection Admin';
     fetchAnalytics();
   }, [timeRange]);
 

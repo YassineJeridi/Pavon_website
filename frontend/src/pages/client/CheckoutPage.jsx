@@ -541,7 +541,7 @@ const CheckoutPage = () => {
                                         <img
                                             src={item.product.images?.[0]?.startsWith('http')
                                                 ? item.product.images[0]
-                                                : `http://localhost:5000${item.product.images?.[0]}`
+                                                : `${(import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api').replace(/\/api$/, '')}${item.product.images?.[0]}`
                                             }
                                             alt={item.product.name}
                                             className="w-16 h-16 object-cover rounded-lg"

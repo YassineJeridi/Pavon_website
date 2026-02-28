@@ -15,7 +15,7 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     if (product) {
-      document.title = `${product.name} - Élégance`;
+      document.title = `${product.name} - Pavone Collection`;
     }
   }, [product]);
 

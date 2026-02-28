@@ -168,7 +168,7 @@ const BannerUpload = ({ banner, onClose, onSuccess }) => {
               name="subtitle"
               value={formData.subtitle}
               onChange={handleInputChange}
-              placeholder="Elegance You See"
+              placeholder="Pavone Collection"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
             />
           </div>

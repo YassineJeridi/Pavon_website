@@ -23,6 +23,22 @@ const ProductCard = ({ product }) => {
 
   const hasColors = product.colors && product.colors.length > 0;
   const hasSizes = product.sizes && product.sizes.length > 0;
+
+  // Parse stored color string "Label|#hex" or legacy French name
+  const frenchColorMap = {
+    'Noir': '#000000', 'Blanc': '#FFFFFF', 'Rouge': '#E53E3E', 'Bleu': '#3B82F6',
+    'Vert': '#22C55E', 'Jaune': '#EAB308', 'Rose': '#EC4899', 'Gris': '#6B7280',
+    'Marron': '#92400E', 'Orange': '#F97316', 'Beige': '#D2B48C', 'Crème': '#FFFDD0',
+    'Marine': '#1E3A5F', 'Bordeaux': '#800020', 'Camel': '#C19A6B',
+  };
+  const parseColor = (colorStr) => {
+    if (!colorStr) return { label: colorStr, hex: '#cccccc' };
+    if (colorStr.includes('|')) {
+      const [label, hex] = colorStr.split('|');
+      return { label, hex };
+    }
+    return { label: colorStr, hex: frenchColorMap[colorStr] || colorStr };
+  };
   const [selectedColor] = useState(hasColors ? product.colors[0] : 'default');
   const [selectedSize] = useState(hasSizes ? product.sizes[0] : 'default');
 
@@ -220,7 +236,7 @@ const ProductCard = ({ product }) => {
           </h3>
 
           {/* Rating */}
-          {product.rating?.average && (
+          {product.rating?.average > 0 && product.rating?.count > 0 && (
             <div className="flex items-center gap-2">
               <div className="flex items-center">
                 {[...Array(5)].map((_, index) => (
@@ -234,7 +250,7 @@ const ProductCard = ({ product }) => {
                 ))}
               </div>
               <span className="text-xs text-gray-500">
-                ({product.rating.count || 0})
+                ({product.rating.count})
               </span>
             </div>
           )}
@@ -256,14 +272,17 @@ const ProductCard = ({ product }) => {
             <div className="flex items-center gap-2 pt-1">
               <span className="text-xs text-gray-600 font-medium">Couleurs:</span>
               <div className="flex items-center gap-1">
-                {product.colors.slice(0, 4).map((color, index) => (
-                  <div
-                    key={index}
-                    className="w-5 h-5 rounded-full border-2 border-gray-200 shadow-sm"
-                    style={{ backgroundColor: color.toLowerCase() }}
-                    title={color}
-                  />
-                ))}
+                {product.colors.slice(0, 4).map((color, index) => {
+                  const { label, hex } = parseColor(color);
+                  return (
+                    <div
+                      key={index}
+                      className="w-5 h-5 rounded-full border-2 border-gray-200 shadow-sm"
+                      style={{ backgroundColor: hex }}
+                      title={label}
+                    />
+                  );
+                })}
                 {product.colors.length > 4 && (
                   <span className="text-xs text-gray-500 ml-1 font-medium">
                     +{product.colors.length - 4}

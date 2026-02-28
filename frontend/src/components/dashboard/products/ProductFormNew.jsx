@@ -32,10 +32,38 @@ const ProductFormNew = ({ product, onClose, onSuccess }) => {
   const [imagePreviews, setImagePreviews] = useState(product?.images?.map(img => getProductImageUrl({ images: [img] })) || []);
   const [imageFiles, setImageFiles] = useState([]);
   const [colorInput, setColorInput] = useState('');
+  const [colorHex, setColorHex] = useState('#000000');
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // Predefined options
-  const predefinedColors = ['Noir', 'Blanc', 'Rouge', 'Bleu', 'Vert', 'Jaune', 'Rose', 'Gris', 'Marron', 'Orange'];
+  const predefinedColors = [
+    { label: 'Noir',   hex: '#000000' },
+    { label: 'Blanc',  hex: '#FFFFFF' },
+    { label: 'Rouge',  hex: '#E53E3E' },
+    { label: 'Bleu',   hex: '#3B82F6' },
+    { label: 'Vert',   hex: '#22C55E' },
+    { label: 'Jaune',  hex: '#EAB308' },
+    { label: 'Rose',   hex: '#EC4899' },
+    { label: 'Gris',   hex: '#6B7280' },
+    { label: 'Marron', hex: '#92400E' },
+    { label: 'Orange', hex: '#F97316' },
+    { label: 'Beige',  hex: '#D2B48C' },
+    { label: 'Crème',  hex: '#FFFDD0' },
+    { label: 'Marine', hex: '#1E3A5F' },
+    { label: 'Bordeaux', hex: '#800020' },
+    { label: 'Camel',  hex: '#C19A6B' },
+  ];
+  // Helper: parse stored color string "Label|#hex" or plain hex/name
+  const parseColor = (colorStr) => {
+    if (!colorStr) return { label: '', hex: '#cccccc' };
+    if (colorStr.includes('|')) {
+      const [label, hex] = colorStr.split('|');
+      return { label, hex };
+    }
+    // Legacy: look up known predefined label
+    const found = predefinedColors.find(c => c.label === colorStr);
+    return { label: colorStr, hex: found ? found.hex : colorStr };
+  };
   const predefinedSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
   const numericSizes = ['32', '34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54'];
 
@@ -260,12 +288,13 @@ const ProductFormNew = ({ product, onClose, onSuccess }) => {
   };
 
   const addColor = () => {
-    if (colorInput.trim() && !formData.colors.includes(colorInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        colors: [...prev.colors, colorInput.trim()]
-      }));
+    const label = colorInput.trim();
+    if (!label) return;
+    const stored = `${label}|${colorHex}`;
+    if (!formData.colors.some(c => c === stored || parseColor(c).label === label)) {
+      setFormData(prev => ({ ...prev, colors: [...prev.colors, stored] }));
       setColorInput('');
+      setColorHex('#000000');
     }
   };
 
@@ -572,36 +601,52 @@ const ProductFormNew = ({ product, onClose, onSuccess }) => {
                 <div className="mb-3">
                   <p className="text-xs text-gray-500 mb-2">Sélection rapide:</p>
                   <div className="flex flex-wrap gap-2">
-                    {predefinedColors.map(color => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => {
-                          if (!formData.colors.includes(color)) {
-                            setFormData(prev => ({ ...prev, colors: [...prev.colors, color] }));
-                          }
-                        }}
-                        className={`px-3 py-1 text-xs rounded-full border transition-colors ${formData.colors.includes(color)
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    {predefinedColors.map(({ label, hex }) => {
+                      const stored = `${label}|${hex}`;
+                      const isSelected = formData.colors.some(c => parseColor(c).label === label);
+                      return (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => {
+                            if (!isSelected) {
+                              setFormData(prev => ({ ...prev, colors: [...prev.colors, stored] }));
+                            }
+                          }}
+                          className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-full border transition-colors ${isSelected
+                            ? 'bg-gray-900 text-white border-gray-900'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                           }`}
-                        disabled={loading}
-                      >
-                        {color}
-                      </button>
-                    ))}
+                          disabled={loading}
+                        >
+                          <span
+                            className="inline-block w-3 h-3 rounded-full border border-gray-300 flex-shrink-0"
+                            style={{ backgroundColor: hex }}
+                          />
+                          {label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Custom Color Input */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   <input
                     type="text"
                     value={colorInput}
                     onChange={(e) => setColorInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColor())}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                    placeholder="Ou entrez une couleur personnalisée..."
+                    placeholder="Nom de la couleur (ex: Turquoise)"
+                    disabled={loading}
+                  />
+                  <input
+                    type="color"
+                    value={colorHex}
+                    onChange={(e) => setColorHex(e.target.value)}
+                    className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5"
+                    title="Choisir la couleur"
                     disabled={loading}
                   />
                   <button
@@ -614,9 +659,43 @@ const ProductFormNew = ({ product, onClose, onSuccess }) => {
                   </button>
                 </div>
 
-                {/* Selected Colors * <span className="text-red-500">*</span>
+                {/* Selected Colors Display */}
+                {formData.colors.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {formData.colors.map((color) => {
+                      const { label, hex } = parseColor(color);
+                      return (
+                        <span
+                          key={color}
+                          className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 rounded-full text-xs text-gray-800"
+                        >
+                          <span
+                            className="inline-block w-3.5 h-3.5 rounded-full border border-gray-300"
+                            style={{ backgroundColor: hex }}
+                          />
+                          {label}
+                          <button
+                            type="button"
+                            onClick={() => removeColor(color)}
+                            className="text-gray-400 hover:text-red-500 transition-colors ml-0.5"
+                            disabled={loading}
+                          >
+                            <XMarkIcon className="w-3.5 h-3.5" />
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
+              </div>
+
+              {/* Sizes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tailles disponibles <span className="text-red-500">*</span>
                 </label>
-                
+
                 {formData.sizeType && (
                   <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-xs text-blue-800">
@@ -648,37 +727,6 @@ const ProductFormNew = ({ product, onClose, onSuccess }) => {
                           formData.sizes.includes(size)
                             ? 'bg-gray-900 text-white border-gray-900'
                             : formData.sizeType === 'numeric'
-                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Numeric Sizes */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs text-gray-500">Tailles numériques:</p>
-                    {formData.sizeType === 'letter' && (
-                      <span className="text-xs text-orange-600 font-medium">
-                        ⚠️ Désactivé (tailles lettres sélectionnées)
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {numericSizes.map(size => (
-                      <button
-                        key={size}
-                        type="button"
-                        onClick={() => toggleSize(size)}
-                        disabled={formData.sizeType === 'letter' && !formData.sizes.includes(size)}
-                        className={`px-3 py-2 text-sm font-medium rounded-lg border transition-colors ${
-                          formData.sizes.includes(size)
-                            ? 'bg-gray-900 text-white border-gray-900'
-                            : formData.sizeType === 'letter'
                             ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                             : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                         }`}

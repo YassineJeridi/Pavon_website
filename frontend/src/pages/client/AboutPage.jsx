@@ -18,7 +18,7 @@ const AboutPage = () => {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.2]);
 
   useEffect(() => {
-    document.title = 'À Propos - Élégance';
+    document.title = 'À Propos - Pavone Collection';
     window.scrollTo(0, 0);
   }, []);
 
@@ -122,7 +122,7 @@ const AboutPage = () => {
                 Mode, Style &
               </span>{' '}
               <span className="bg-gradient-to-r from-[#5d1115] to-[#111f35] bg-clip-text text-transparent">
-                Élégance
+                Pavone Collection
               </span>
             </motion.h1>
 

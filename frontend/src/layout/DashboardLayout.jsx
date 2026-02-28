@@ -70,7 +70,7 @@ const DashboardFooter = () => {
   return (
     <footer className="bg-white border-t border-gray-200 py-4 px-6">
       <div className="flex flex-col sm:flex-row items-center justify-between text-sm text-gray-600">
-        <p>© {currentYear} Élégance Admin. Tous droits réservés.</p>
+        <p>© {currentYear} Pavone Collection Admin. Tous droits réservés.</p>
         <div className="flex items-center space-x-4 mt-2 sm:mt-0">
           <a href="#" className="hover:text-gray-900 transition-colors">
             Documentation

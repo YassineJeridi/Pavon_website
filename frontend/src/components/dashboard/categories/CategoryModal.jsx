@@ -95,7 +95,7 @@ const CategoryModal = ({
                                 <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden bg-gray-50 flex-shrink-0">
                                     {previewUrl ? (
                                         <img
-                                            src={previewUrl.startsWith('http') ? previewUrl : `http://localhost:5000${previewUrl}`}
+                                            src={previewUrl.startsWith('http') ? previewUrl : `${(import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api').replace(/\/api$/, '')}${previewUrl}`}
                                             alt="Preview"
                                             className="w-full h-full object-cover"
                                         />

@@ -35,6 +35,32 @@ const authService = {
     const response = await api.put('/auth/password', passwords);
     return response.data;
   },
+
+  // ── Admin management (super_admin only) ───────────────────
+  getAllAdmins: async () => {
+    const response = await api.get('/auth/admins');
+    return response.data;
+  },
+
+  createAdmin: async (data) => {
+    const response = await api.post('/auth/create-admin', data);
+    return response.data;
+  },
+
+  deleteAdmin: async (id) => {
+    const response = await api.delete(`/auth/admins/${id}`);
+    return response.data;
+  },
+
+  toggleAdminStatus: async (id) => {
+    const response = await api.patch(`/auth/admins/${id}/toggle`);
+    return response.data;
+  },
+
+  resetAdminPassword: async (id, newPassword) => {
+    const response = await api.put(`/auth/admins/${id}/password`, { newPassword });
+    return response.data;
+  },
 };
 
 export default authService;

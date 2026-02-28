@@ -1,7 +1,8 @@
 // frontend/src/components/dashboard/common/Sidebar.jsx
 
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { AuthContext } from '../../../context/AuthContext';
 import {
   HomeIcon,
   ShoppingBagIcon,
@@ -19,16 +20,23 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   ArchiveBoxIcon,
+  Cog6ToothIcon,
+  KeyIcon,
+  UserPlusIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
+  const { admin } = useContext(AuthContext);
+  const isSuperAdmin = admin?.role === 'super_admin';
   
   // State for each collapsible group
   const [openGroups, setOpenGroups] = useState({
     orders: true,
     catalog: true,
     content: true,
+    settings: false,
   });
 
   // Toggle group open/close
@@ -84,6 +92,20 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         { name: 'Bannières Principales', path: '/dashboard/banners', icon: PhotoIcon },
         { name: 'Témoignages', path: '/dashboard/testimonials', icon: StarIcon },
         { name: 'Messages Contact', path: '/dashboard/contacts', icon: EnvelopeIcon },
+      ],
+    },
+    // Group 4: Paramètres
+    {
+      type: 'group',
+      key: 'settings',
+      name: 'Paramètres',
+      icon: Cog6ToothIcon,
+      items: [
+        { name: 'Changer le mot de passe', path: '/dashboard/settings', icon: KeyIcon },
+        ...(isSuperAdmin ? [
+          { name: 'Créer un admin', path: '/dashboard/settings/create', icon: UserPlusIcon },
+          { name: 'Gérer les admins', path: '/dashboard/settings/manage', icon: UsersIcon },
+        ] : []),
       ],
     },
   ];

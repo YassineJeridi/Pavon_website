@@ -196,7 +196,7 @@ const CustomerFeedback = () => {
                       <div className="flex items-center gap-4">
                         {testimonial.avatar ? (
                           <img
-                            src={`http://localhost:5000${testimonial.avatar}`}
+                            src={`${(import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api').replace(/\/api$/, '')}${testimonial.avatar}`}
                             alt={testimonial.name}
                             className="w-14 h-14 rounded-full object-cover border-3 border-white shadow-md ring-2 ring-purple-200"
                             onError={(e) => {

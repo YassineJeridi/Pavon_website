@@ -1,7 +1,7 @@
 {
   "name": "elegance-backend",
   "version": "1.0.0",
-  "description": "Backend API for Élégance e-commerce platform - Tunisian fashion boutique",
+  "description": "Backend API for Pavone Collection e-commerce platform - Tunisian fashion boutique",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

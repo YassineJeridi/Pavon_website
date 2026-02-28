@@ -394,26 +394,120 @@ exports.createAdmin = async (req, res) => {
 // @access  Private/Super Admin
 exports.getAllAdmins = async (req, res) => {
   try {
-    // Check if requester is super admin
     if (req.admin.role !== 'super_admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Accès refusé',
-      });
+      return res.status(403).json({ success: false, message: 'Accès refusé' });
     }
 
     const admins = await Admin.find().select('-password').sort({ createdAt: -1 });
 
-    res.status(200).json({
-      success: true,
-      count: admins.length,
-      data: admins,
-    });
+    res.status(200).json({ success: true, count: admins.length, data: admins });
   } catch (error) {
     console.error('Error fetching admins:', error);
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la récupération des administrateurs',
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Delete an admin (Super Admin only)
+// @route   DELETE /api/auth/admins/:id
+// @access  Private/Super Admin
+exports.deleteAdmin = async (req, res) => {
+  try {
+    if (req.admin.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Accès refusé' });
+    }
+
+    if (req.params.id === req.admin._id.toString()) {
+      return res.status(400).json({ success: false, message: 'Vous ne pouvez pas supprimer votre propre compte' });
+    }
+
+    const admin = await Admin.findByIdAndDelete(req.params.id);
+
+    if (!admin) {
+      return res.status(404).json({ success: false, message: 'Administrateur non trouvé' });
+    }
+
+    res.status(200).json({ success: true, message: 'Administrateur supprimé avec succès' });
+  } catch (error) {
+    console.error('Error deleting admin:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la suppression',
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Toggle admin active status (Super Admin only)
+// @route   PATCH /api/auth/admins/:id/toggle
+// @access  Private/Super Admin
+exports.toggleAdminStatus = async (req, res) => {
+  try {
+    if (req.admin.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Accès refusé' });
+    }
+
+    if (req.params.id === req.admin._id.toString()) {
+      return res.status(400).json({ success: false, message: 'Vous ne pouvez pas modifier votre propre statut' });
+    }
+
+    const admin = await Admin.findById(req.params.id);
+
+    if (!admin) {
+      return res.status(404).json({ success: false, message: 'Administrateur non trouvé' });
+    }
+
+    admin.isActive = !admin.isActive;
+    await admin.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      success: true,
+      message: `Administrateur ${admin.isActive ? 'activé' : 'désactivé'} avec succès`,
+      data: { _id: admin._id, isActive: admin.isActive },
+    });
+  } catch (error) {
+    console.error('Error toggling admin status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la modification du statut',
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Reset another admin's password (Super Admin only)
+// @route   PUT /api/auth/admins/:id/password
+// @access  Private/Super Admin
+exports.resetAdminPassword = async (req, res) => {
+  try {
+    if (req.admin.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Accès refusé' });
+    }
+
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: 'Mot de passe invalide (min. 6 caractères)' });
+    }
+
+    const admin = await Admin.findById(req.params.id);
+
+    if (!admin) {
+      return res.status(404).json({ success: false, message: 'Administrateur non trouvé' });
+    }
+
+    admin.password = newPassword;
+    await admin.save();
+
+    res.status(200).json({ success: true, message: 'Mot de passe réinitialisé avec succès' });
+  } catch (error) {
+    console.error('Error resetting admin password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la réinitialisation du mot de passe',
       error: error.message,
     });
   }

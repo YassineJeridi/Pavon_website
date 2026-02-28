@@ -13,6 +13,9 @@ const {
   resetPassword,
   createAdmin,
   getAllAdmins,
+  deleteAdmin,
+  toggleAdminStatus,
+  resetAdminPassword,
 } = require('../controllers/authController');
 const { protect, authorize } = require('../middleware/auth');
 const {
@@ -37,5 +40,8 @@ router.put('/password', protect, validatePasswordChange, changePassword);
 // Super Admin only routes
 router.post('/create-admin', protect, authorize('super_admin'), validateRegister, createAdmin);
 router.get('/admins', protect, authorize('super_admin'), getAllAdmins);
+router.delete('/admins/:id', protect, authorize('super_admin'), deleteAdmin);
+router.patch('/admins/:id/toggle', protect, authorize('super_admin'), toggleAdminStatus);
+router.put('/admins/:id/password', protect, authorize('super_admin'), resetAdminPassword);
 
 module.exports = router;

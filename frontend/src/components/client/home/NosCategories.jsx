@@ -8,7 +8,7 @@ import categoryService from '../../../services/categoryService';
 const NosCategories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const API_URL = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000';
+  const API_URL = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'https://backend.pavonecollection.com';
 
   useEffect(() => {
     fetchCategories();
@@ -36,14 +36,20 @@ const NosCategories = () => {
     if (category.image.startsWith('http://') || category.image.startsWith('https://')) {
       return category.image;
     }
+
+    // Encode each path segment to handle spaces and special chars (e.g. "Capture d'écran ...")
+    const encodedPath = category.image
+      .split('/')
+      .map(segment => encodeURIComponent(segment))
+      .join('/');
     
     // If starts with /, prepend API base URL
     if (category.image.startsWith('/')) {
-      return `${API_URL}${category.image}`;
+      return `${API_URL}${encodedPath}`;
     }
     
     // Otherwise assume it needs /uploads/ prefix
-    return `${API_URL}/uploads/${category.image}`;
+    return `${API_URL}/uploads/${encodedPath}`;
   };
 
   return (

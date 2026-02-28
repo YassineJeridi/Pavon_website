@@ -24,7 +24,7 @@ const CategoryGrid = ({ categories, onEdit, onDelete }) => {
                     <div className="relative w-full h-48 bg-gray-100 overflow-hidden flex-shrink-0">
                         {category.image ? (
                             <img
-                                src={category.image.startsWith('http') ? category.image : `http://localhost:5000${category.image}`}
+                                src={category.image.startsWith('http') ? category.image : `${(import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api').replace(/\/api$/, '')}${category.image}`}
                                 alt={category.name}
                                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                             />

@@ -21,7 +21,7 @@ const CollectionsPage = () => {
   const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
 
   useEffect(() => {
-    document.title = 'Nos Collections - Élégance';
+    document.title = 'Nos Collections - Pavone Collection';
     fetchCollections();
   }, []);
 
