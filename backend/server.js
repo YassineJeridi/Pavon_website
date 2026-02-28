@@ -19,6 +19,8 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'https://pavon-website.vercel.app',
+  'https://pavonecollection.com',
+  'https://www.pavonecollection.com',
   FRONTEND_URL
 ];
 
