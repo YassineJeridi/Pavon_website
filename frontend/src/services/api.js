@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-baseURL: import.meta.env.VITE_API_URL || 'https://pavon-website.onrender.com/api',
+baseURL: import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api',
 
   timeout: 60000, // 60 seconds for image uploads
 });

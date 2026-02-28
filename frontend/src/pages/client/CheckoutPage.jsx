@@ -154,7 +154,6 @@ const CheckoutPage = () => {
                     size: item.size || 'Standard',
                     color: item.color || 'Standard',
                 })),
-                paymentMethod: 'cash_on_delivery',
                 notes: '',
             };
 

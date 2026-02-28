@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 const CollectionProductsModal = ({ collection, products, onClose, onDissociate }) => {
   const [loading, setLoading] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL || 'https://pavon-website.onrender.com/api';
+  const API_URL = import.meta.env.VITE_API_URL || 'https://backend.pavonecollection.com/api';
 
   const handleDissociate = async (productId) => {
     if (!confirm('Dissocier ce produit de la collection ?')) return;

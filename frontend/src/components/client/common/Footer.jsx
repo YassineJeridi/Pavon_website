@@ -173,7 +173,7 @@ const Footer = () => {
                 >
                   <div className="h-12 w-12 rounded-full overflow-hidden flex items-center justify-center bg-white">
                     <img
-                      src="/src/assets/Pavon_logo.png"
+                      src="/assets/Pavon_logo.png"
                       alt="Pavone Logo"
                       className="h-full w-full object-cover"
                     />
@@ -271,7 +271,7 @@ const Footer = () => {
               <span className="flex items-center space-x-1">
                 <span>Developed by</span>
                 <a 
-                  href="https://www.instagram.com/redixdigitalsolutions/" 
+                  href="https://redixdigitalsolutions.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-pink-500 hover:text-pink-400 transition-colors font-medium"
